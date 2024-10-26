@@ -1,0 +1,38 @@
+/* Custom styles for the slider */
+.carousel-item {
+    transition: transform 0.6s ease-in-out;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-size: 100%, 100%;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M4.854 0.146a.5.5 0 010 .708L2.207 3.5H7.5a.5.5 0 010 1H2.207l2.647 2.646a.5.5 0 11-.708.708l-3-3a.5.5 0 010-.708l3-3a.5.5 0 01.708 0z'/%3E%3C/svg%3E");
+  }
+  
+  .carousel-control-prev-icon {
+    transform: rotate(180deg);
+  }
+  
+  .carousel-control-next-icon {
+    transform: rotate(0deg);
+  }
+  
+  .carousel {
+    position: relative;
+    width: 100%;
+  }
+  
+  .carousel-inner {
+    display: flex;
+  }
+  
+  .carousel-item {
+    flex: 0 0 100%;
+  }
+  
+  .carousel-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  

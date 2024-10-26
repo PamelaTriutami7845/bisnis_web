@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="output.css">
+    <title>Navbar</title>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-left: 10px;
+        }
+
+        .popup {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .popup.hidden {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        .popup.visible {
+            transform: scale(1);
+            opacity: 1;
+        }
+    </style>
+    <style>
+        dialog[open] {
+            animation: appear .15s cubic-bezier(0, 1.8, 1, 1.8);
+        }
+
+        dialog::backdrop {
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.5), rgba(54, 54, 54, 0.5));
+            backdrop-filter: blur(3px);
+        }
+
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateX(-3rem);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total {
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+        <nav class="relative px-4 py-4 flex justify-between items-center bg-white">
+            <a class="text-md flex font-bold ustify-between items-center" href="#">
+                <img src="./Image/Technology.png" alt="webcraft" class="w-20">
+                WebCraft Studio
+            </a>
+            <div class="flex ">
+                <div class="lg:hidden">
+                    <button class="navbar-burger flex items-center p-5 text-blue-600 p-3">
+                        <svg class="block h-4 w-4 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <title>Mobile menu</title>
+                            <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <ul class="hidden md:flex md:justify-center md:space-x-6 lg:space-x-8">
+            <li><a class="text-black font-semibold hover:text-gray-400" href="/">Beranda</a></li>
+            <li><a class="text-black font-semibold hover:text-gray-400" href="/produk/design">Produk</a></li>
+            <li><a class="text-black font-semibold hover:text-gray-400" href="#4">Testimoni</a></li>
+        </ul>
+                <!-- Card Icon -->
+                <section class="flex justify-center items-start">
+                    <button onclick="document.getElementById('myModal').showModal()" id="btn" class="text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13l-1.35 5.4a1 1 0 001 1.2h12.72a1 1 0 001-1.2L17 13m-10 0V7h10m-6 11a2 2 0 11-4 0 2 2 0 014 0m6 0a2 2 0 11-4 0 2 2 0 014 0" />
+                        </svg>
+                    </button>
+                    <!-- Element to display coding package count -->
+                    <div id="packageCount">
+                        <b>0</b>
+                    </div>
+                </section>
+
+                <!-- Modal -->
+                <dialog id="myModal" class="h-auto w-11/12 md:w-1/2 p-5 bg-white rounded-md">
+                    <div id="cart" class="flex flex-col w-full h-auto">
+                        <!-- Header -->
+                        <div class="flex w-full h-auto justify-center items-center">
+                            <div class="flex w-10/12 h-auto py-3 justify-center items-center text-2xl font-bold">
+                                Checkout Sekarang!
+                            </div>
+                            <div onclick="document.getElementById('myModal').close();" class="m-2 absolute right-0 top-0 w-1/12 h-auto justify-center cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </div>
+                            <!-- Header End -->
+                        </div>
+                        <!-- Modal Content -->
+                        <div class="flex flex-col w-full py-10 px-2 justify-center items-center bg-gray-200 rounded text-center text-gray-500">
+                            <ul id="cartItems" class="list-disc list-inside space-y-2">
+                                <!-- Cart items will be dynamically added here -->
+                            </ul>
+                            <div id="emptyMessage" class="text-center">Jangan lupa, Isi dulu ya itemsnya</div>
+                            <!-- End of Modal Content -->
+                            <div id="resultDisplay" style="margin-top: 20px;">
+                                <!-- Hasil perhitungan akan ditampilkan di sini -->
+                            </div>
+                        </div>
+                        <div id="addons" class="mt-3">
+                            <label>
+                                <b>Khusus paket visual & audio</b> <br>
+
+                                <input type="checkbox" id="fileMasterCheckbox" />
+                                <label for="fileMasterCheckbox">Add File Master (+Rp50.000)</label>
+
+                            </label>
+                            <br>
+                            <label>
+                                <b>Khusus paket design grafis (Katalog) </b>
+                                <br>
+                                <input type="checkbox" id="extraPageCheckbox" />
+                                <!-- <label for="extraPageCheckbox">Add Extra Pages</label> -->
+                                <label for="extraPagesInput">Jumlah Halaman Ekstra: (1 halaman = Rp.15.000)</label>
+                                <br>
+                                <input class="mt-2 mb-2 shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" id="extraPagesInput" name="extraPages" min="0" value="0" disabled />
+                                <div id="extraPagesDisplay"></div>
+                            </label>
+                            <br>
+                            <b>Khusus paket design grafis (Sertifikat)</b>
+
+                            <div>
+                                <p>
+                                    <b>
+                                        Jika nama lebih dari 20, harga per 10 nama ialah Rp10.000 (berlaku kelipatan)
+                                    </b>
+                                </p>
+                                <label for="applyExtraNames">
+                                    <input type="checkbox" id="applyExtraNames" name="applyExtraNames">
+
+                                </label>
+                                <label for="extraNamesInput">
+                                    Number of Extra Names:
+                                </label>
+                                <br>
+                                <input class="mt-2 mb-2 shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" id="extraNamesInput" name="extraNames" min="0" value="0">
+                                <br>
+                                <div id="extraNamesDisplay"></div>
+                            </div>
+                            <!-- UI/UX Design Section -->
+                            <label>
+                                <b>Khusus paket design grafis (UI/UX design)</b>
+                                <br>
+
+
+                                <input type="radio" id="uiuxBasic" name="uiuxOption" value="80000">
+                                <label for="uiuxBasic"> 1 Page Mobile App/Websites (Basic): Rp.80.000</label>
+                                <br>
+
+                                <input type="radio" id="uiuxStandard" name="uiuxOption" value="360000">
+                                <label for="uiuxStandard"> 1 Page Mobile App/Websites (Standard): Rp.360.000</label>
+                                <br>
+
+                                <input type="radio" id="uiuxExclusive" name="uiuxOption" value="576000">
+                                <label for="uiuxExclusive">1 Page Mobile App/Websites (Exclusive): Rp.576.000 </label>
+                                <br>
+
+                        </div>
+
+                        <!-- Number of Pages for UI/UX -->
+                        <div>
+                            <label for="">Masukan jumlah halaman:</label>
+                            <br>
+                            <input class="mt-2 shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" id="uiuxPagesInput" placeholder="Jumlah Halaman" min="0" value="0">
+                            <br>
+                            <div id="uiuxCostDisplay"></div>
+                        </div>
+
+                        </label>
+                    </div>
+                    <!-- info user -->
+                    <div class="flex flex-col w-full py-5 px-2">
+                        <b>Jangan Lupa memasukan data kalian ya!</b>
+                        <form id="checkoutForm">
+                            <div class="form-group">
+                                <label for="name">Nama</label>
+                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" id="name" placeholder="masukan nama" name="name" required>
+                                <span id="nameError" class="error-message"></span><br>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Alamat</label>
+                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="masukan alamat" type="text" id="address" name="address" required>
+                                <span id="addressError" class="error-message"></span><br>
+                            </div>
+                            <div class="form-group">
+                                <label for="telephone">Nomer Telepon</label>
+                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="masukan nomer telpon" type="tel" id="telephone" name="telephone" required>
+                                <span id="telephoneError" class="error-message"></span><br>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="masukan email" type="email" id="email" name="email" required>
+                                <span id="emailError" class="error-message"></span><br>
+                            </div>
+
+                            <div class="mt-3 mb-3">
+                                <label for="message" class="block mb-2 text-sm font-medium text-gray-900">Deskripsi</label>
+                                <textarea id="message" rows="4" class="block p-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 " placeholder="masukan pesan atau deskripsi: Contoh: saya ingin mempunyai design logo dengan tema cafe kopi..."></textarea>
+                                <span id="messageError" class="error-message"></span><br>
+                            </div>
+                            <button id="checkout" class="w-full mb-4 mt-4 py-3 px-10 bg-gray-800 text-white rounded text shadow-xl">Checkout</button>
+                            <button id="cancelCheckout" class="py-3 px-6 bg-gray-500 text-black rounded shadow-xl">
+                                Batal Checkout
+                            </button>
+
+
+                        </form>
+                    </div>
+
+
+                    <div class="total text-center text-lg">
+                        <p id="totalAmount">Total: Rp0</p>
+                    </div>
+                    <!-- info user -->
+            </div>
+            </dialog>
+
+            <!-- end -->
+            </div>
+        </nav>
+        <div class="navbar-menu relative z-50 hidden">
+            <div class="navbar-backdrop fixed inset-0 bg-gray-800 opacity-25"></div>
+            <nav class="fixed top-0 left-0 bottom-0 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-white border-r overflow-y-auto">
+                <div class="flex items-center mb-8">
+                    <a class="flex items-center mr-auto text-md font-bold leading-none" href="#">
+                        <img src="../Image/Technology.png" alt="webcraft" class="w-20">
+                        Webcraft Studio
+                    </a>
+                    <button class="navbar-close">
+                        <svg class="h-6 w-6 text-gray-400 cursor-pointer hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <ul>
+                        <li class="mb-1">
+                            <a class="block p-4 text-sm font-semibold text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded" href="../index.php">Beranda</a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="block p-4 text-sm font-semibold text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded" href="../produk/index.php">Produk</a>
+                        </li>
+                        <li class="mb-1">
+                            <a class="block p-4 text-sm font-semibold text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded" href="../testimoni/index.php">Testimoni</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </body>
+    <script>
+        // Burger menus
+        document.addEventListener('DOMContentLoaded', function() {
+            // open
+            const burger = document.querySelectorAll('.navbar-burger');
+            const menu = document.querySelectorAll('.navbar-menu');
+
+            if (burger.length && menu.length) {
+                for (var i = 0; i < burger.length; i++) {
+                    burger[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+
+            // close
+            const close = document.querySelectorAll('.navbar-close');
+            const backdrop = document.querySelectorAll('.navbar-backdrop');
+
+            if (close.length) {
+                for (var i = 0; i < close.length; i++) {
+                    close[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+
+            if (backdrop.length) {
+                for (var i = 0; i < backdrop.length; i++) {
+                    backdrop[i].addEventListener('click', function() {
+                        for (var j = 0; j < menu.length; j++) {
+                            menu[j].classList.toggle('hidden');
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+    <script src="cart.js"></script>
+</html>
+</body>
+
+</html>
